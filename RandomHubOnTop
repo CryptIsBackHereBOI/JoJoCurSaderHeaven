@@ -1,0 +1,642 @@
+--open source so skidder and devs can see
+repeat wait() until game:IsLoaded()
+  print("Loaded Successfuly..Check game")
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Random Hub", -- Required
+	Text = "Check Game...", -- Required
+	Icon = "http://www.roblox.com/asset/?id=7560431921" -- Optional
+})
+
+wait(.1)
+
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Random Hub", -- Required
+	Text = "Found Game: Jojo: Crusaders' Heaven | Load Script...", -- Required
+	Icon = "http://www.roblox.com/asset/?id=7560431921" -- Optional
+})
+wait(.5)
+
+
+function tween(position)
+  Distance = (position.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+  game:GetService("TweenService"):Create(
+      game.Players.LocalPlayer.Character.HumanoidRootPart,
+      TweenInfo.new(Distance / 500, Enum.EasingStyle.Linear),
+      {CFrame = position}
+  ):Play()
+end
+--table
+local mobs = {}
+ for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do 
+  
+  table.insert(mobs, v.Name)
+ end
+
+
+local players = {}
+for i,v in pairs(game:GetService("Players"):GetChildren()) do
+  if v.ClassName == "Player" then
+     table.insert(players,v.Name)
+  end
+end
+
+local npcs = {}
+for i,v in pairs(game.Workspace:GetChildren()) do
+  if v:FindFirstChild("Humanoid") and v:FindFirstChild("ProximityPrompt") then
+     table.insert(npcs,v.Name)
+  end
+end
+
+
+local anticheat
+anticheat = hookmetamethod(game, "__index", newcclosure(function(...)
+    local self, k = ...
+    
+    if not checkcaller() and k == "WalkSpeed" and self.Name == "Humanoid" and self:IsA("Humanoid") then
+        return 16;
+    elseif not checkcaller() and k == "JumpPower" and self.Name == "Humanoid" and self:IsA("Humanoid") then
+        return 50;
+    elseif not checkcaller() and k == "Gravity" and self.Name == "Workspace" then
+        return 196.2;
+    end
+    
+    return anticheat(...)
+end))
+
+local Plr = game.Players.LocalPlayer
+
+-- Part of Anti Cheat Bypass
+local antikick
+antikick = hookmetamethod(game, "__namecall", function(...)
+    local self, k = ...
+
+    if not checkcaller() and self == Plr and k == "Kick" then
+        return;
+    end
+    
+    return antikick(...)
+end)
+
+
+
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+  v:Disable()
+end
+
+
+
+
+
+  local DiscordLib = loadstring(game:HttpGet"https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/discord%20lib.txt")()
+
+  local win = DiscordLib:Window("JoJo Cursader Heaven's - Random Hub")
+  
+
+  local serv = win:Server("AutoFarm", "Made By SexLiokSlave - Thanks For Using!")
+
+  local drops = serv:Channel("NpcsFarm")
+    
+  local mob = nil 
+local drop1 = drops:Dropdown("Select Mob:",mobs, function(t)
+  mob = t
+  end)
+  
+  local player = nil 
+  local drop = drops:Dropdown("Select Player:",players, function(t)
+    player = t
+    end)
+    
+
+    local npc = nil 
+    local drop = drops:Dropdown("Select NPC:",npcs, function(t)
+      npc = t
+      end)
+
+
+  local Distance
+    local sldr =
+    drops:Slider(
+    "Distance Farm:",
+    0,
+    20,
+    1,
+    function(t)
+    Distance = CFrame.new(0,0,t)
+    end
+)
+
+
+
+drops:Toggle(
+    "Start AutoFarm Mob",
+    false,
+    function(bool)
+        print(bool)
+        print("Start Farming")
+        getgenv().Level = bool
+        while getgenv().Level == true do
+            task.wait()
+            if not Level then
+                break
+            end
+    
+                for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if v.Name == mob and game.Players.LocalPlayer.Character and Level then
+                                repeat 
+                            task.wait()
+                                tween(v.HumanoidRootPart.CFrame * Distance)
+                                game:GetService("ReplicatedStorage").Combat.Punch:FireServer()
+                                --m1 HERE
+                            task.wait()
+                            if not Level then
+                                break
+                            end
+                    until 
+            v.Humanoid.Health <= 0 or
+            Level == false
+                    end
+                end
+            end
+      end
+)
+
+
+drops:Toggle(
+    "Start AutoFarm Player",
+    false,
+    function(bool)
+        print(bool)
+        print("Start Farming")
+    getgenv().Level = bool
+    while getgenv().Level == true do
+        task.wait()
+        if not Level then
+            break
+        end
+
+            for i, v in pairs(game:GetService("Workspace"):GetChildren()) do
+                if v.Name == player and game.Players.LocalPlayer.Character and Level then
+                            repeat 
+                        task.wait()
+                        tween(
+                            v.HumanoidRootPart.CFrame * Distance)
+                            game:GetService("ReplicatedStorage").Combat.Punch:FireServer()
+
+                        task.wait()
+                        if not Level then
+                            break
+                        end
+                until 
+        v.Humanoid.Health <= 0 or
+        Level == false
+                end
+            end
+        end
+      end
+)
+
+
+
+drops:Toggle(
+    "Auto Sprint",
+    false,
+    function(bool)
+      getgenv().Spirnt = bool
+      while task.wait() do
+      if Spirnt then
+if not game.Players.LocalPlayer.Character.IsRunning.Value == true then
+  game:GetService("ReplicatedStorage").Combat.Run:FireServer()
+
+
+  else
+      end
+    else
+      wait()
+      break
+   end
+   end
+    end)
+
+    drops:Button(
+      "Teleport To Selected NPC",
+      function()
+        game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace")[npc].HumanoidRootPart.CFrame
+      end
+  )
+
+local item = serv:Channel("ItemFarm")
+
+item:Toggle(
+    "Noclip - Use For AutoFarm Items",
+    false,
+    function(bool)
+local plr = game.Players.LocalPlayer
+-- R6 Noclip
+if plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 then
+    getgenv().r6noclip = bool
+                game:GetService("RunService").Stepped:Connect(function()
+if getgenv().r6noclip == true then 
+     game.Players.LocalPlayer.Character.Head.CanCollide = false
+game.Players.LocalPlayer.Character.Torso.CanCollide = false
+game.Players.LocalPlayer.Character["Left Leg"].CanCollide = false
+game.Players.LocalPlayer.Character["Right Leg"].CanCollide = false
+end
+end)
+end
+
+-- R15 Noclip
+if plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 then
+    getgenv().r15noclip = bool
+                game:GetService("RunService").Stepped:Connect(function()
+if getgenv().r15noclip == true then 
+    Clip = false
+    if Clip == false and plr.Character ~= nil then
+            for i,v in pairs(plr.Character:GetDescendants()) do
+                if v:IsA("BasePart") and v.CanCollide == true and v.Name ~= floatName then
+                    v.CanCollide = false
+                end
+            end
+    end
+end
+end)
+end
+end
+)
+
+
+
+item:Toggle(
+    "Auto TP / Claim All Items",
+    false,
+    function(bool)
+      getgenv().Test = bool
+      while task.wait() do
+       if Test then
+     for i,v in pairs(game:GetService("Workspace"):GetChildren()) do 
+           if v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("SpawnedItem") then
+            tween(v.Handle.CFrame * CFrame.new(0,2,1))
+    
+                                        fireproximityprompt(v.ProximityPrompt)
+                end
+           end
+         else
+             wait()
+             break
+         end
+         end
+    end
+)
+
+
+item:Toggle(
+    "Auto TP / Claim Easter Eggs",
+    false,
+    function(bool)
+      getgenv().Easter = bool
+      while task.wait() do
+       if Easter then
+     
+     for i,v in pairs(game:GetService("Workspace"):GetChildren()) do 
+           if v.Name == "Easter Egg"and  v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("SpawnedItem") then
+            tween(v.Handle.CFrame * CFrame.new(0,2,1))
+    
+            fireproximityprompt(v.ProximityPrompt)
+                end
+           end
+         else
+             wait()
+             break
+         end
+         end
+    end
+)
+
+
+
+item:Toggle(
+    "Auto TP / Claim Money",
+    false,
+    function(bool)
+      getgenv().Money = bool
+ while task.wait() do
+  if Money then
+
+for i,v in pairs(game:GetService("Workspace"):GetChildren()) do 
+      if v.Name == "Money"and  v:FindFirstChild("ProximityPrompt") and v:FindFirstChild("SpawnedItem") then
+        tween(v.Handle.CFrame * CFrame.new(0,2,1))
+    
+        fireproximityprompt(v.ProximityPrompt)
+           end
+      end
+    else
+        wait()
+        break
+    end
+    end
+    end
+)
+
+
+
+item:Toggle(
+    "Auto Claim Emails Guy",
+    false,
+    function(bool)
+      getgenv().Rereoll = bool
+     while task.wait() do
+          if Rereoll then
+            workspace.MailGuy.MailGuy:FireServer()
+
+else
+  wait()
+  break
+end
+end
+end)
+
+
+
+
+
+
+item:Button(
+    "Server Hop",
+    function()
+      local Servers = game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"))
+      for i,v in pairs(Servers.data) do
+          if v.playing ~= v.maxPlayers then
+              game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, v.id)
+          end
+      end
+    end)
+
+
+local localplayer = serv:Channel("LocalPlayer")
+
+
+local sldr =
+localplayer:Slider(
+    "Walkspeed: " .. game.Players.LocalPlayer.Character.Humanoid.WalkSpeed,
+    0,
+    500,
+    16,
+    function(t)
+      local gmt = getrawmetatable(game)
+local oldI = gmt.__index
+setreadonly(gmt, false)
+
+local wantedWS = t
+local defaultWS = 16
+
+gmt.__index = newcclosure(function(self,key)
+    if tostring(self) == "Humanoid" and tostring(key) == "WalkSpeed" then
+        self.WalkSpeed = wantedWS
+        return defaultWS
+    end
+    return oldI(self,key)
+end)
+
+    game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = wantedWS
+          end
+)
+
+
+
+local sldr =
+localplayer:Slider(
+    "JumpPower: " .. game.Players.LocalPlayer.Character.Humanoid.JumpPower,
+    0,
+    500,
+    16,
+    function(t)
+      local gmt = getrawmetatable(game)
+local oldI = gmt.__index
+setreadonly(gmt, false)
+
+local wantedJP = t
+local defaultJP = 16
+
+gmt.__index = newcclosure(function(self,key)
+    if tostring(self) == "Humanoid" and tostring(key) == "JumpPower" then
+        self.JumpPower = wantedJP
+        return defaultJP
+    end
+    return oldI(self,key)
+end)
+
+    game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = wantedJP
+          end
+)
+
+
+   
+localplayer:Button(
+    "Destroy FE NameTag",
+    function()
+  local name = game.Players.LocalPlayer.Name
+  game:GetService("Workspace")[name].HumanoidRootPart.Nametag:Destroy()
+end)
+
+localplayer:Button(
+    "FE Invisible",
+    function()
+tween(CFrame.new(-598.861084, 210.799911, 358.327148, 0.190906897, -2.89529041e-08, -0.981608152, 1.27915127e-08, 1, -2.7007637e-08, 0.981608152, -7.40030837e-09, 0.190906897))
+  wait(5)
+  game.Players.LocalPlayer.Character.LowerTorso:Destroy()
+  wait(5)
+  tween(CFrame.new(-31.0010605, 3.09994245, -15.5251522, 0.121217802, 1.08389857e-08, -0.992625952, 4.56528682e-09, 1, 1.14770113e-08, 0.992625952, -5.92284044e-09, 0.121217802))
+end)
+
+localplayer:Button(
+    "Remove Stand",
+    function()
+workspace.Pucci.Pucci:FireServer()
+end)
+
+
+localplayer:Button(
+    "No Stun",
+    function()
+        game.Players.LocalPlayer.Character.Combat.StunSystem:Destroy()
+end)
+
+localplayer:Toggle(
+    "Stun All Mobs",
+    false,
+    function(bool)
+        print(bool)
+        getgenv().Stun = bool
+         while task.wait() do
+          if  Stun then
+            for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+              if v:IsA("Model")  then
+                v.Humanoid.Sit = true
+               end
+              end
+              else
+                wait()
+                break
+          end
+         end
+    end
+)
+
+
+
+localplayer:Toggle(
+    "OneShot All Mobs",
+    false,
+    function(bool)
+        print(bool)
+        DiscordLib:Notification("Before Use! - SexLioKSlave#3321", "WORKING FOR BOSSES ONLY!", "Okay nig-!")
+        getgenv().OS = bool
+         while task.wait() do
+          if  OS then
+            for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do 
+                if v:FindFirstChild("Humanoid") and v.Name == "DIO" or "Diego" or "Doppio" or "Kira" then
+                   v.Humanoid.RigType = "R6"
+                end
+                end
+              else
+                wait()
+                break
+          end
+         end
+    end
+
+)
+
+
+local suggest = serv:Channel("Suggestion")
+
+suggest:Textbox(
+    "Suggest Your Idea Here, it's will send into #suggest-webhook!",
+    "Your Ideas here!",
+    true,
+    function(t)
+       
+local url = "https://discord.com/api/webhooks/980397478102855740/wmj7Z4k4kNSWHhKy2PghZt9KTJ8gtSw7GRayN5NlnRxtRNB-9dgp6LQ_x8fjDxF2XzJE"
+t = t 
+
+
+        local data = {
+          ["username"] = "Suggestion BOT - Random Hub";
+        ["content"] = "**Script Suggestion - A Random Hub | Jojo: Crusaders' Heaven**",
+        ["avatar_url"] = "https://tr.rbxcdn.com/6a12746b5a392d54c9180d191b5027af/768/432/Image/Png",
+        ["embeds"] = {
+            {
+                ["title"] = "**An Player Suggest A Idea For You!**",
+                ["description"] = "**Suggest From Jojo: Crusaders' Heaven Script: ** " .. "**" .. t .. "**",
+                ["type"] = "rich",
+                ["color"] = tonumber(0x7269da),
+                ["image"] = {
+                    ["url"] = "https://i.ytimg.com/vi/Ek_f1F3KOfY/maxresdefault.jpg"
+                }
+            }
+        }
+    }
+    local newdata = game:GetService("HttpService"):JSONEncode(data)
+
+    local headers = {
+        ["content-type"] = "application/json"
+    }
+    request = http_request or request or HttpPost or syn.request
+    local abcdef = {
+        Url = url,
+        Body = newdata,
+        Method = "POST",
+        Headers = headers
+    }
+    request(abcdef)
+    
+    end
+)
+
+
+suggest:Button(
+    "Discord Invite | Random Hub",
+    function()
+     setclipboard(tostring("https://discord.com/invite/8A7HKsw3cM"))
+     DiscordLib:Notification("Join now!!!11", "Copied!", "Okay nig-!")
+    end
+)
+
+suggest:Label("Creator: SexLiokSlave#3321")
+
+local storage = serv:Channel("Storage")
+
+
+storage:Button(
+  "Slot 1",
+    function()
+      local args = {
+        [1] = 1
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
+
+storage:Button(
+  "Slot 2",
+    function()
+      local args = {
+        [1] = 2
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
+
+storage:Button(
+  "Slot 3",
+    function()
+      local args = {
+        [1] = 3
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
+
+storage:Button(
+  "Slot 4",
+    function()
+      local args = {
+        [1] = 4
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
+
+storage:Label("Robux Storage")
+
+storage:Button(
+    "Slot 5",
+    function()
+      local args = {
+        [1] = 5
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
+
+storage:Button(
+    "Slot 6" ,
+    function()
+      local args = {
+        [1] = 6
+    }
+    
+    game:GetService("ReplicatedStorage").ItemEvent.StandStorage:FireServer(unpack(args))
+
+    end
+)
